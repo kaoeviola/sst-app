@@ -1,0 +1,1 @@
+export { generateSimplePdf } from "./generator";
