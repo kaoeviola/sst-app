@@ -1,6 +1,14 @@
 # SST App
 
-Projeto Next.js 14 com App Router para gestao de seguranca do trabalho, APR, PT, assinaturas digitais, IA e suporte offline.
+Aplicação web (e API para app mobile) para gestão de segurança do trabalho: emissão de APR (Análise Preliminar de Risco) e PT (Permissão de Trabalho) com apoio de IA, assinatura digital e funcionamento offline em campo.
+
+## Funcionalidades
+
+- **Geração de APR/PT assistida por IA**: pipeline de agentes (analisador de atividade → gerador → revisor técnico contra normas regulamentadoras → revisor determinístico) que produz o documento a partir da descrição da atividade.
+- **Log de chamadas LLM**: cada geração de IA fica registrada para auditoria e depuração do pipeline.
+- **Assinatura digital** dos documentos emitidos.
+- **PWA com suporte offline**: cache local via IndexedDB (Dexie.js) para uso em campo sem conexão.
+- **API mobile**: endpoints de autenticação (login/registro/refresh) que servem o app Flutter companion do projeto.
 
 ## Stack
 
