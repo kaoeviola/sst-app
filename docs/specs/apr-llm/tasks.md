@@ -43,7 +43,8 @@
 - Como testar: gerar APR com revisao automatizada sem erros criticos e com erros de validacao, verificando semantica do retorno.
 - Risco: medio, porque mexe no comportamento central da feature.
 - Precisa de confirmacao antes de executar: sim, por alterar agentes e contrato de resposta.
-- Status: pendente
+- Status: concluida
+- Nota de execucao: executada nesta rodada operacional como Task 2; o retorno agora separa `rascunhoGerado`, `aprovadoRevisaoAutomatizada`, `requerRevisaoHumana` e problemas/pendencias da revisao automatizada, sem expor custo, latencia ou metadados internos.
 
 ## Task 4: Revisar revisao automatizada como apoio, nao aprovacao
 
@@ -73,7 +74,8 @@
 - Como testar: simular sucesso e falha de log, garantindo que a API continua com resposta segura.
 - Risco: medio a alto, porque envolve logs, privacidade e banco.
 - Precisa de confirmacao antes de executar: sim, por envolver logs LLM e possivelmente banco.
-- Status: pendente
+- Status: concluida
+- Nota de execucao: mensagens brutas de SDK/provedor nao sao mais persistidas em `errorMessage`; erros sao classificados em codigos seguros curtos e falhas de persistencia de log nao imprimem objeto/payload bruto no console.
 
 ## Task 7: Revisar dados enviados para provedores LLM
 

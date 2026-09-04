@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { orquestrarGeracaoAPR } from "@/lib/agents";
 import { auth } from "@/lib/auth";
+import { mobileAccessClaims } from "@/lib/mobile/auth";
+import { mobileCorsOptions, withMobileCors } from "@/lib/mobile/cors";
 
 const BodySchema = z.object({
   descricaoAtividade: z.string().min(5).max(2000),
@@ -26,43 +28,50 @@ function publicIssue(issue: { code: string; message: string; severity: "ERROR" |
 
 export async function POST(req: Request) {
   const session = await auth();
+  const mobileClaims = session?.user ? null : await mobileAccessClaims(req);
 
-  if (!session?.user) {
-    return NextResponse.json({ error: "Nao autenticado" }, { status: 401 });
+  if (!session?.user && !mobileClaims) {
+    return withMobileCors(NextResponse.json({ error: "Nao autenticado" }, { status: 401 }));
   }
 
   const body = await req.json().catch(() => null);
   const parsed = BodySchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json({ error: "Input invalido", issues: parsed.error.issues }, { status: 400 });
+    return withMobileCors(NextResponse.json({ error: "Input invalido", issues: parsed.error.issues }, { status: 400 }));
   }
 
   const result = await orquestrarGeracaoAPR(parsed.data, {
-    companyId: session.user.companyId,
-    userId: session.user.id
+    companyId: session?.user.companyId ?? mobileClaims!.companyId,
+    userId: session?.user.id ?? mobileClaims!.sub!
   });
 
-  const errosValidacao = [...result.errosRevisorDeterministico, ...result.erros].map(publicIssue);
+  const errosValidacao = result.problemasRevisaoAutomatizada.map(publicIssue);
 
   if (!result.success) {
-    return NextResponse.json(
+    return withMobileCors(NextResponse.json(
       {
         success: false,
         error: "Nao foi possivel gerar o rascunho da APR.",
         issues: errosValidacao
       },
       { status: 502 }
-    );
+    ));
   }
 
-  return NextResponse.json({
+  return withMobileCors(NextResponse.json({
     success: true,
     status: "RASCUNHO_IA",
     aviso: AVISO_REVISAO_HUMANA,
+    rascunhoGerado: result.rascunhoGerado,
+    aprovadoRevisaoAutomatizada: result.aprovadoRevisaoAutomatizada,
+    requerRevisaoHumana: result.requerRevisaoHumana,
     analise: result.analise ?? null,
     apr: result.apr ?? null,
     revisaoAutomatizada: {
+      aprovado: result.aprovadoRevisaoAutomatizada,
+      requerRevisaoHumana: result.requerRevisaoHumana,
+      problemas: errosValidacao,
       deterministica: {
         aprovado: result.errosRevisorDeterministico.length === 0,
         erros: result.errosRevisorDeterministico.map(publicIssue)
@@ -70,5 +79,9 @@ export async function POST(req: Request) {
       llm: result.revisaoLLM ?? null
     },
     errosValidacao
-  });
+  }));
+}
+
+export function OPTIONS() {
+  return mobileCorsOptions();
 }

@@ -41,6 +41,7 @@ model Company {
   pts         Pt[]
   assinaturas Assinatura[]
   auditLogs   AuditLog[]
+  llmCallLogs LLMCallLog[]
 }
 
 model User {
@@ -56,6 +57,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   auditLogs     AuditLog[]
+  llmCallLogs   LLMCallLog[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -229,4 +231,29 @@ model AuditLog {
 
   @@index([companyId, timestamp])
   @@index([entidade, entidadeId])
+}
+
+model LLMCallLog {
+  id           String   @id @default(cuid())
+  agentName    String
+  model        String
+  provider     String
+  inputTokens  Int
+  outputTokens Int
+  costUSD      Float
+  latencyMs    Int
+  status       String
+  documentType String?
+  documentId   String?
+  errorMessage String?
+  createdAt    DateTime @default(now())
+
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id])
+
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
+
+  @@index([companyId, createdAt])
+  @@index([agentName, status])
 }

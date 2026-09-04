@@ -12,7 +12,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:seed": "tsx prisma/seed.ts",
-    "test:llm": "tsx scripts/test-llm.ts"
+    "test:llm": "tsx scripts/test-llm.ts",
+    "test:apr": "tsx scripts/test-apr.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -29,6 +30,7 @@
     "clsx": "^2.1.1",
     "dexie": "^4.0.10",
     "groq-sdk": "^1.2.1",
+    "jose": "^6.0.6",
     "jspdf": "^2.5.2",
     "lucide-react": "^0.468.0",
     "next": "14.2.35",

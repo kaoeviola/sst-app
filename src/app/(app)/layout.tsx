@@ -7,6 +7,7 @@ const navItems = [
   ["Obras", "/obras"],
   ["Funcionarios", "/funcionarios"],
   ["Atividades", "/atividades"],
+  ["Gerar APR/PT", "/gerar-apr-pt"],
   ["APR", "/apr/novo"],
   ["PT", "/pt/novo"],
   ["Assinaturas", "/assinaturas"]
